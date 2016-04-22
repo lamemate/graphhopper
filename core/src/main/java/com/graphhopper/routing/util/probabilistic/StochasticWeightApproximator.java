@@ -1,5 +1,7 @@
-package com.graphhopper.routing.util;
+package com.graphhopper.routing.util.probabilistic;
 
+import com.graphhopper.routing.util.WeightApproximator;
+import com.graphhopper.routing.util.Weighting;
 import com.graphhopper.storage.NodeAccess;
 
 /**
