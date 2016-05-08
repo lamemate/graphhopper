@@ -5,9 +5,7 @@ import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.PMap;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Provides the methods to retrieve probability values for a specific edge according to
@@ -17,53 +15,75 @@ import java.util.List;
  */
 public class ProbabilisticWeighting extends FastestWeighting
 {
+    // User paramters
+    private final int VALUE;
+    private final String VALUE_TYPE;
+    private final String VALUE_BOUND;
+    private final String BLOCKING_MODE;
+
     private final FlagEncoder encoder;
 
-    private PMap pMap;
     private final EdgeData edgeData;
 
     public ProbabilisticWeighting( FlagEncoder encoder, PMap pMap, EdgeData edgeData )
     {
         super(encoder);
         this.encoder = encoder;
-        this.pMap = pMap;
+
+        if (pMap == null)
+        {
+            throw new IllegalArgumentException("Weightingmap must not be null!");
+        }
+        this.VALUE = pMap.getInt("user_value", Integer.MIN_VALUE);
+        this.VALUE_TYPE = pMap.get("user_value_type", EdgeEntryValueType.WEATHER_TEMPERATURE.toString());
+        this.VALUE_BOUND = pMap.get("user_value_bound", "lower");
+        this.BLOCKING_MODE = pMap.get("user_blocking_mode", "block");
+
+        if (edgeData == null)
+        {
+            throw new IllegalArgumentException("EdgeData must not be null!");
+        }
         this.edgeData = edgeData;
     }
 
     @Override
     public double calcWeight(EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId)
     {
-        int value = pMap.getInt("user_value", 0);
-        final String valueType = pMap.get("user_value_type", EdgeEntryValueType.WEATHER_TEMPERATURE.toString());
-        String valueBound = pMap.get("user_value_bound", "lower");
-        String blockingMode = pMap.get("user_bound_mode", "block"); // set edge weight to +infinity
-
         // get super weight from fastest weighting implementation
         double w = super.calcWeight(edgeState, reverse, prevOrNextEdgeId);
 
         EdgeEntry edgeEntry = edgeData.getEntryForEdgeId(edgeState.getEdge());
-
-        EdgeEntryData edgeEntryData = edgeEntry.getClosestSourcesForDateAndValueType(new Date(), EdgeEntryValueType.valueOf(valueType)); // TODO actual date!
-        // calculate the mean value
-        double edgeMeanValue = 0;
-        for (EdgeEntryValue entryValueForType : edgeEntryData)
+        if (edgeEntry != null)
         {
-            edgeMeanValue += entryValueForType.getSource().getProbability() * entryValueForType.getValues().get(EdgeEntryValueType.valueOf(valueType));
-        }
-
-        if (("lower".equalsIgnoreCase(valueBound) && value >= edgeMeanValue)
-                || ("upper".equalsIgnoreCase(valueBound) && value <= edgeMeanValue))
-        {
-            return w;
-        }
-        else
-        {
-            if ("block".equalsIgnoreCase(blockingMode))
+            EdgeEntryData edgeEntryData = edgeEntry.getClosestSourcesForDateAndValueType(new Date(), EdgeEntryValueType.valueOf(VALUE_TYPE)); // TODO actual date!
+            if (edgeEntryData != null)
             {
-                return Double.POSITIVE_INFINITY;
+                // calculate the mean value
+                double edgeMeanValue = 0;
+                for (EdgeEntryValue entryValueForType : edgeEntryData)
+                {
+                    edgeMeanValue += entryValueForType.getSource().getProbability() * entryValueForType.getValues().get(EdgeEntryValueType.valueOf(VALUE_TYPE));
+                }
+
+                if (("lower".equalsIgnoreCase(VALUE_BOUND) && VALUE >= edgeMeanValue)
+                        || ("upper".equalsIgnoreCase(VALUE_BOUND) && VALUE <= edgeMeanValue))
+                {
+                    // Value meets bound criteria, return super (fastest) weighting
+                    return w;
+                }
+                else
+                {
+                    // Value did not meet bound criteria, reroute according to blocking mode
+                    if ("block".equalsIgnoreCase(BLOCKING_MODE))
+                    {
+                        return Double.POSITIVE_INFINITY;
+                    }
+                    return w * 1000; // TODO userdefined? good value?
+                }
             }
-            return w * 1000; // TODO userdefined?
         }
+        // No data found, return super (fastest) weighting
+        return w;
     }
 
     @Override
@@ -81,11 +101,7 @@ public class ProbabilisticWeighting extends FastestWeighting
     @Override
     public boolean matches(String weightingAsStr, FlagEncoder encoder)
     {
-        if (getName().equalsIgnoreCase(weightingAsStr) && this.encoder.equals(encoder))
-        {
-            return true;
-        }
-        return false;
+        return getName().equalsIgnoreCase(weightingAsStr) && this.encoder.equals(encoder);
     }
 
     @Override
