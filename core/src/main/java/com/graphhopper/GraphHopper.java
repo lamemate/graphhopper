@@ -25,6 +25,7 @@ import com.graphhopper.reader.dem.SRTMProvider;
 import com.graphhopper.routing.*;
 import com.graphhopper.routing.ch.PrepareContractionHierarchies;
 import com.graphhopper.routing.util.*;
+import com.graphhopper.routing.util.probabilistic.ProbabilisticWeighting;
 import com.graphhopper.storage.*;
 import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.LocationIndexTree;
@@ -992,6 +993,12 @@ public class GraphHopper implements GraphHopperAPI
         {
             if (encoder.supports(CurvatureWeighting.class))
                 return new CurvatureWeighting(encoder, weightingMap, ghStorage);
+            else
+                return new FastestWeighting(encoder, weightingMap);
+        } else if ("probabilistic".equalsIgnoreCase(weighting))
+        {
+            if (encoder.supports(ProbabilisticWeighting.class))
+                return new ProbabilisticWeighting(encoder, weightingMap, null);
             else
                 return new FastestWeighting(encoder, weightingMap);
         }
