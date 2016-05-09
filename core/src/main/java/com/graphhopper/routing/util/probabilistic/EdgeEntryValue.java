@@ -27,4 +27,22 @@ public class EdgeEntryValue
     {
         this.values = values;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EdgeEntryValue that = (EdgeEntryValue) o;
+
+        return source.equals(that.source);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return source.hashCode();
+    }
 }

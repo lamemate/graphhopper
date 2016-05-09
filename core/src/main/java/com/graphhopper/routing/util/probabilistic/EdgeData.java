@@ -1,10 +1,9 @@
 package com.graphhopper.routing.util.probabilistic;
 
 import com.graphhopper.util.shapes.BBox;
+import gnu.trove.set.hash.THashSet;
 
-import java.util.ArrayList;
-
-public class EdgeData extends ArrayList<EdgeEntry>
+public class EdgeData extends THashSet<EdgeEntry>
 {
     public EdgeEntry getEntryForBoundingBox(BBox boundingBox)
     {

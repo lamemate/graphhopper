@@ -72,5 +72,23 @@ public class EdgeEntry
     {
         this.values = values;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EdgeEntry edgeEntry = (EdgeEntry) o;
+
+        return boundingBox.equals(edgeEntry.boundingBox);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return boundingBox.hashCode();
+    }
 }
 

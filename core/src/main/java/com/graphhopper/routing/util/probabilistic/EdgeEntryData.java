@@ -1,8 +1,8 @@
 package com.graphhopper.routing.util.probabilistic;
 
-import java.util.ArrayList;
+import gnu.trove.set.hash.THashSet;
 
-public class EdgeEntryData extends ArrayList<EdgeEntryValue>
+public class EdgeEntryData extends THashSet<EdgeEntryValue>
 {
     public boolean containsEdgeEntryValue(EdgeEntryValueType edgeEntryValueType)
     {

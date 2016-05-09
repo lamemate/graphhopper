@@ -34,4 +34,22 @@ public class EdgeEntrySource
     {
         this.probability = probability;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EdgeEntrySource that = (EdgeEntrySource) o;
+
+        return source.equals(that.source);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return source.hashCode();
+    }
 }
