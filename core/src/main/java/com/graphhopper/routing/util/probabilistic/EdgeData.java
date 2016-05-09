@@ -29,4 +29,14 @@ public class EdgeData extends THashSet<EdgeEntry>
         return null;
     }
 
+    public void updateWithEdgeEntry(EdgeEntry edgeEntry)
+    {
+        if (!super.add(edgeEntry)) {
+            for (EdgeEntry entry : this) {
+                if (entry.equals(edgeEntry)) {
+                    entry.updateValues(edgeEntry.getValues());
+                }
+            }
+        }
+    }
 }

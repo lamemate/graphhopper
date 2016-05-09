@@ -8,6 +8,11 @@ public class EdgeEntryValue
 
     private TMap<EdgeEntryValueType, Double> values;
 
+    public void updateValues(TMap<EdgeEntryValueType, Double> values)
+    {
+        this.values.putAll(values);
+    }
+
     public EdgeEntrySource getSource()
     {
         return source;

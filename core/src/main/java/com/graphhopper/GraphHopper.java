@@ -25,6 +25,7 @@ import com.graphhopper.reader.dem.SRTMProvider;
 import com.graphhopper.routing.*;
 import com.graphhopper.routing.ch.PrepareContractionHierarchies;
 import com.graphhopper.routing.util.*;
+import com.graphhopper.routing.util.probabilistic.EdgeData;
 import com.graphhopper.routing.util.probabilistic.ProbabilisticWeighting;
 import com.graphhopper.storage.*;
 import com.graphhopper.storage.index.LocationIndex;
@@ -99,6 +100,9 @@ public class GraphHopper implements GraphHopperAPI
     // utils
     private final TranslationMap trMap = new TranslationMap().doImport();
     private ElevationProvider eleProvider = ElevationProvider.NOOP;
+
+    // probabilistic routing
+    private EdgeData edgeData = new EdgeData();
 
     public GraphHopper()
     {
@@ -997,10 +1001,9 @@ public class GraphHopper implements GraphHopperAPI
                 return new FastestWeighting(encoder, weightingMap);
         } else if ("probabilistic".equalsIgnoreCase(weighting))
         {
-            if (encoder.supports(ProbabilisticWeighting.class))
-                return new ProbabilisticWeighting(encoder, weightingMap, null);
-            else
-                return new FastestWeighting(encoder, weightingMap);
+            System.out.println("WEIGHTING: " + weighting);
+                System.out.println("YEAH PROB!");
+                return new ProbabilisticWeighting(encoder, weightingMap, edgeData);
         }
 
         throw new UnsupportedOperationException("weighting " + weighting + " not supported");
@@ -1393,5 +1396,15 @@ public class GraphHopper implements GraphHopperAPI
     {
         if (!allowWrites)
             throw new IllegalStateException("Writes are not allowed!");
+    }
+
+    public EdgeData getEdgeData()
+    {
+        return edgeData;
+    }
+
+    public void setEdgeData( EdgeData edgeData )
+    {
+        this.edgeData = edgeData;
     }
 }

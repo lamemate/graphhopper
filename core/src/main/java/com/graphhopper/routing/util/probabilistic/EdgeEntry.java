@@ -5,7 +5,6 @@ import gnu.trove.map.TMap;
 import gnu.trove.set.TIntSet;
 
 import java.util.Date;
-import java.util.List;
 
 public class EdgeEntry
 {
@@ -51,6 +50,24 @@ public class EdgeEntry
             }
         }
         return values.get(closestDate);
+    }
+
+    public void updateWithEdgeEntryDataForDate(EdgeEntryData edgeEntryData, Date date)
+    {
+        this.values.put(date, edgeEntryData);
+        // cleanup old entries on each update
+        for (Date keyDate : this.values.keySet())
+        {
+            if (keyDate.before(new Date()))
+            {
+                this.values.remove(keyDate);
+            }
+        }
+    }
+
+    public void updateValues(TMap<Date, EdgeEntryData> values)
+    {
+        this.values.putAll(values);
     }
 
     public BBox getBoundingBox()

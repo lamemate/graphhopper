@@ -17,13 +17,19 @@
  */
 package com.graphhopper.http;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+import com.graphhopper.GHRequest;
+import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.util.CmdArgs;
 import com.graphhopper.util.TranslationMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author Peter Karich
@@ -33,6 +39,8 @@ public class DefaultModule extends AbstractModule
     private final Logger logger = LoggerFactory.getLogger(getClass());
     protected final CmdArgs args;
     private GraphHopper graphHopper;
+
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public DefaultModule( CmdArgs args )
     {
@@ -52,7 +60,19 @@ public class DefaultModule extends AbstractModule
      */
     protected GraphHopper createGraphHopper( CmdArgs args )
     {
-        GraphHopper tmp = new GraphHopper().forServer().init(args);
+        GraphHopper tmp = new GraphHopper() {
+
+            @Override
+            public GHResponse route( GHRequest request )
+            {
+                lock.readLock().lock();
+                try {
+                    return super.route(request);
+                } finally {
+                    lock.readLock().unlock();
+                }
+            }
+        }.forServer().init(args);
         tmp.importOrLoad();
         logger.info("loaded graph at:" + tmp.getGraphHopperLocation()
                 + ", source:" + tmp.getOSMFile()
@@ -79,9 +99,18 @@ public class DefaultModule extends AbstractModule
             bind(Boolean.class).annotatedWith(Names.named("jsonpAllowed")).toInstance(jsonpAllowed);
 
             bind(RouteSerializer.class).toInstance(new SimpleRouteSerializer(graphHopper.getGraphHopperStorage().getBounds()));
+
+            final WeatherDataUpdater updater = new WeatherDataUpdater(getGraphHopper(), getGraphHopper().getEdgeData(), lock.writeLock());
+            bind(WeatherDataUpdater.class).toInstance(updater);
+            bind(ObjectMapper.class).toInstance(createMapper());
         } catch (Exception ex)
         {
             throw new IllegalStateException("Couldn't load graph", ex);
         }
+    }
+
+    public static ObjectMapper createMapper()
+    {
+        return new ObjectMapper();
     }
 }
