@@ -2,11 +2,20 @@ package com.graphhopper.routing.util.probabilistic;
 
 import gnu.trove.set.hash.THashSet;
 
-public class EdgeEntryData extends THashSet<EdgeEntryValue>
+import java.util.Set;
+
+public class EdgeEntryData
 {
+    private Set<EdgeEntryValue> entries;
+
+    public EdgeEntryData()
+    {
+        this.entries = new THashSet<EdgeEntryValue>();
+    }
+
     public boolean containsEdgeEntryValue(EdgeEntryValueType edgeEntryValueType)
     {
-        for (EdgeEntryValue value : this)
+        for (EdgeEntryValue value : entries)
         {
             if (value.getValues().containsKey(edgeEntryValueType))
             {
@@ -18,9 +27,9 @@ public class EdgeEntryData extends THashSet<EdgeEntryValue>
 
     public void updateWithEdgeEntryValue( EdgeEntryValue edgeEntryValue )
     {
-        if (!super.add(edgeEntryValue))
+        if (!entries.add(edgeEntryValue))
         {
-            for (EdgeEntryValue value : this)
+            for (EdgeEntryValue value : entries)
             {
                 if (value.equals(edgeEntryValue))
                 {

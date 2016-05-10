@@ -1,6 +1,7 @@
 package com.graphhopper.routing.util.probabilistic;
 
 import com.graphhopper.util.shapes.BBox;
+import gnu.trove.TIntCollection;
 import gnu.trove.map.TMap;
 import gnu.trove.set.TIntSet;
 
@@ -12,7 +13,7 @@ public class EdgeEntry
     private final BBox boundingBox;
 
     // All the edge ids belonging to the grid
-    private final TIntSet edges;
+    private final TIntCollection edges;
 
     // Map of list of available values
     private TMap<Date, EdgeEntryData> values;
@@ -75,7 +76,7 @@ public class EdgeEntry
         return boundingBox;
     }
 
-    public TIntSet getEdges()
+    public TIntCollection getEdges()
     {
         return edges;
     }

@@ -3,11 +3,20 @@ package com.graphhopper.routing.util.probabilistic;
 import com.graphhopper.util.shapes.BBox;
 import gnu.trove.set.hash.THashSet;
 
-public class EdgeData extends THashSet<EdgeEntry>
+import java.util.Set;
+
+public class EdgeData
 {
+    private Set<EdgeEntry> entries;
+
+    public EdgeData()
+    {
+        this.entries = new THashSet<EdgeEntry>(1500); // about the amount of grids
+    }
+
     public EdgeEntry getEntryForBoundingBox(BBox boundingBox)
     {
-        for ( EdgeEntry entry : this)
+        for ( EdgeEntry entry : entries)
         {
             if (entry.getBoundingBox().equals(boundingBox))
             {
@@ -19,7 +28,7 @@ public class EdgeData extends THashSet<EdgeEntry>
 
     public EdgeEntry getEntryForEdgeId(int id)
     {
-        for (EdgeEntry entry : this)
+        for (EdgeEntry entry : entries)
         {
             if (entry.containsEdgeId(id))
             {
@@ -31,9 +40,12 @@ public class EdgeData extends THashSet<EdgeEntry>
 
     public void updateWithEdgeEntry(EdgeEntry edgeEntry)
     {
-        if (!super.add(edgeEntry)) {
-            for (EdgeEntry entry : this) {
-                if (entry.equals(edgeEntry)) {
+        if (!entries.add(edgeEntry))
+        {
+            for (EdgeEntry entry : entries)
+            {
+                if (entry.equals(edgeEntry))
+                {
                     entry.updateValues(edgeEntry.getValues());
                 }
             }
