@@ -2,33 +2,33 @@ package com.graphhopper.routing.util.probabilistic;
 
 import gnu.trove.map.TMap;
 
-public class EdgeEntryValue
+public class GridEntryValue
 {
-    private EdgeEntrySource source;
+    private GridEntrySource source;
 
-    private TMap<EdgeEntryValueType, Double> values;
+    private TMap<GridEntryValueType, Double> values;
 
-    public void updateValues(TMap<EdgeEntryValueType, Double> values)
+    public void updateValues(TMap<GridEntryValueType, Double> values)
     {
         this.values.putAll(values);
     }
 
-    public EdgeEntrySource getSource()
+    public GridEntrySource getSource()
     {
         return source;
     }
 
-    public void setSource( EdgeEntrySource source )
+    public void setSource( GridEntrySource source )
     {
         this.source = source;
     }
 
-    public TMap<EdgeEntryValueType, Double> getValues()
+    public TMap<GridEntryValueType, Double> getValues()
     {
         return values;
     }
 
-    public void setValues( TMap<EdgeEntryValueType, Double> values )
+    public void setValues( TMap<GridEntryValueType, Double> values )
     {
         this.values = values;
     }
@@ -39,7 +39,7 @@ public class EdgeEntryValue
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        EdgeEntryValue that = (EdgeEntryValue) o;
+        GridEntryValue that = (GridEntryValue) o;
 
         return source.equals(that.source);
 

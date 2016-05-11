@@ -25,7 +25,7 @@ import com.graphhopper.reader.dem.SRTMProvider;
 import com.graphhopper.routing.*;
 import com.graphhopper.routing.ch.PrepareContractionHierarchies;
 import com.graphhopper.routing.util.*;
-import com.graphhopper.routing.util.probabilistic.EdgeData;
+import com.graphhopper.routing.util.probabilistic.GridData;
 import com.graphhopper.routing.util.probabilistic.ProbabilisticWeighting;
 import com.graphhopper.storage.*;
 import com.graphhopper.storage.index.LocationIndex;
@@ -102,7 +102,7 @@ public class GraphHopper implements GraphHopperAPI
     private ElevationProvider eleProvider = ElevationProvider.NOOP;
 
     // probabilistic routing
-    private EdgeData edgeData = new EdgeData();
+    private GridData gridData = new GridData();
 
     public GraphHopper()
     {
@@ -1003,7 +1003,7 @@ public class GraphHopper implements GraphHopperAPI
         {
             System.out.println("WEIGHTING: " + weighting);
                 System.out.println("YEAH PROB!");
-                return new ProbabilisticWeighting(encoder, weightingMap, edgeData);
+                return new ProbabilisticWeighting(encoder, weightingMap, gridData);
         }
 
         throw new UnsupportedOperationException("weighting " + weighting + " not supported");
@@ -1398,13 +1398,13 @@ public class GraphHopper implements GraphHopperAPI
             throw new IllegalStateException("Writes are not allowed!");
     }
 
-    public EdgeData getEdgeData()
+    public GridData getGridData()
     {
-        return edgeData;
+        return gridData;
     }
 
-    public void setEdgeData( EdgeData edgeData )
+    public void setGridData( GridData gridData )
     {
-        this.edgeData = edgeData;
+        this.gridData = gridData;
     }
 }

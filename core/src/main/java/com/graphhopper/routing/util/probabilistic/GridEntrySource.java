@@ -1,12 +1,12 @@
 package com.graphhopper.routing.util.probabilistic;
 
-public class EdgeEntrySource
+public class GridEntrySource
 {
     private final String source;
 
     private double probability;
 
-    public EdgeEntrySource(String source, double probability)
+    public GridEntrySource( String source, double probability)
     {
         if (source == null || source.isEmpty())
         {
@@ -41,7 +41,7 @@ public class EdgeEntrySource
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        EdgeEntrySource that = (EdgeEntrySource) o;
+        GridEntrySource that = (GridEntrySource) o;
 
         return source.equals(that.source);
 

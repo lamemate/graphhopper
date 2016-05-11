@@ -56,10 +56,6 @@ public class AlgorithmOptions
      */
     public static final String ASTAR_BI = "astarbi";
     /**
-     * Unidirectional P*
-     */
-    public static final String PSTAR = "pstar";
-    /**
      * alternative route algorithm
      */
     public static final String ALT_ROUTE = "alternativeRoute";

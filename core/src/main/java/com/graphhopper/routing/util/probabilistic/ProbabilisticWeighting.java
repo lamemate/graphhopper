@@ -23,9 +23,9 @@ public class ProbabilisticWeighting extends FastestWeighting
 
     private final FlagEncoder encoder;
 
-    private final EdgeData edgeData;
+    private final GridData gridData;
 
-    public ProbabilisticWeighting( FlagEncoder encoder, PMap pMap, EdgeData edgeData )
+    public ProbabilisticWeighting( FlagEncoder encoder, PMap pMap, GridData gridData )
     {
         super(encoder);
         this.encoder = encoder;
@@ -35,15 +35,15 @@ public class ProbabilisticWeighting extends FastestWeighting
             throw new IllegalArgumentException("Weightingmap must not be null!");
         }
         this.VALUE = pMap.getInt("user_value", Integer.MIN_VALUE);
-        this.VALUE_TYPE = pMap.get("user_value_type", EdgeEntryValueType.WEATHER_TEMPERATURE.toString());
+        this.VALUE_TYPE = pMap.get("user_value_type", GridEntryValueType.WEATHER_TEMPERATURE.toString());
         this.VALUE_BOUND = pMap.get("user_value_bound", "lower");
         this.BLOCKING_MODE = pMap.get("user_blocking_mode", "block");
 
-        if (edgeData == null)
+        if (gridData == null)
         {
-            throw new IllegalArgumentException("EdgeData must not be null!");
+            throw new IllegalArgumentException("GridData must not be null!");
         }
-        this.edgeData = edgeData;
+        this.gridData = gridData;
     }
 
     @Override
@@ -52,18 +52,14 @@ public class ProbabilisticWeighting extends FastestWeighting
         // get super weight from fastest weighting implementation
         double w = super.calcWeight(edgeState, reverse, prevOrNextEdgeId);
 
-        EdgeEntry edgeEntry = edgeData.getEntryForEdgeId(edgeState.getEdge());
-        if (edgeEntry != null)
+        GridEntry gridEntry = gridData.getGridEntryForEdgeId(edgeState.getEdge());
+        if (gridEntry != null)
         {
-            EdgeEntryData edgeEntryData = edgeEntry.getClosestSourcesForDateAndValueType(new Date(), EdgeEntryValueType.valueOf(VALUE_TYPE)); // TODO actual date!
-            if (edgeEntryData != null)
+            GridEntryData gridEntryData = gridEntry.getClosestSourcesForDateAndValueType(new Date(), GridEntryValueType.valueOf(VALUE_TYPE)); // TODO actual date!
+            if (gridEntryData != null)
             {
                 // calculate the mean value
-                double edgeMeanValue = 0;
-                for (EdgeEntryValue entryValueForType : edgeEntryData)
-                {
-                    edgeMeanValue += entryValueForType.getSource().getProbability() * entryValueForType.getValues().get(EdgeEntryValueType.valueOf(VALUE_TYPE));
-                }
+                double edgeMeanValue = gridEntryData.calculateMeanValueForGridEntryValueType(GridEntryValueType.valueOf(VALUE_TYPE));
 
                 if (("lower".equalsIgnoreCase(VALUE_BOUND) && VALUE >= edgeMeanValue)
                         || ("upper".equalsIgnoreCase(VALUE_BOUND) && VALUE <= edgeMeanValue))

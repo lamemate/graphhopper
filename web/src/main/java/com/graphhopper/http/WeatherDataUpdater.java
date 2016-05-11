@@ -28,13 +28,13 @@ public class WeatherDataUpdater
     private final Lock writeLock;
     private final int seconds = 150;
 
-    private EdgeData edgeData;
+    private GridData gridData;
 
-    public WeatherDataUpdater( GraphHopper hopper, EdgeData edgeData, Lock writeLock )
+    public WeatherDataUpdater( GraphHopper hopper, GridData gridData, Lock writeLock )
     {
         this.graph = hopper.getGraphHopperStorage();
         this.nodeAccess = graph.getNodeAccess();
-        this.edgeData = edgeData;
+        this.gridData = gridData;
         this.writeLock = writeLock;
     }
 
@@ -71,30 +71,30 @@ public class WeatherDataUpdater
             }
         }
 
-        EdgeEntry edgeEntry = new EdgeEntry(bBox, edges);
+        GridEntry gridEntry = new GridEntry(bBox, edges);
 
-        EdgeEntryValue edgeEntryValue = new EdgeEntryValue();
-        TMap<EdgeEntryValueType, Double> values = new THashMap<EdgeEntryValueType, Double>(12);
-        values.put(EdgeEntryValueType.WEATHER_CLOUDAGE, data.getCloudage());
-        values.put(EdgeEntryValueType.WEATHER_PRECIPITATION_DEPTH, data.getPrecipitationDepth());
-        values.put(EdgeEntryValueType.WEATHER_WINDCHILL, data.getWindChill());
-        values.put(EdgeEntryValueType.WEATHER_WIND_SPEED, data.getWindSpeed());
-        values.put(EdgeEntryValueType.WEATHER_ATMOSPHERE_HUMIDITY, data.getAtmosphereHumidity());
-        values.put(EdgeEntryValueType.WEATHER_ATMOSPHERE_PRESSURE, data.getAtmospherePressure());
-        values.put(EdgeEntryValueType.WEATHER_TEMPERATURE, data.getTemperature());
-        values.put(EdgeEntryValueType.WEATHER_MAXIMUM_WIND_SPEED, data.getMaximumWindSpeed());
-        values.put(EdgeEntryValueType.WEATHER_SUNSHINE_DURATION, data.getSunshineDuration());
-        values.put(EdgeEntryValueType.WEATHER_SNOW_HEIGHT, data.getSnowHeight());
-        values.put(EdgeEntryValueType.WEATHER_TEMPERATURE_HIGH, data.getTemperatureHigh());
-        values.put(EdgeEntryValueType.WEATHER_TEMPERATURE_LOW, data.getTemperatureLow());
-        edgeEntryValue.setValues(values);
-        edgeEntryValue.setSource(new EdgeEntrySource("NOAA", 1)); // TODO get from JSON
+        GridEntryValue gridEntryValue = new GridEntryValue();
+        TMap<GridEntryValueType, Double> values = new THashMap<GridEntryValueType, Double>(12);
+        values.put(GridEntryValueType.WEATHER_CLOUDAGE, data.getCloudage());
+        values.put(GridEntryValueType.WEATHER_PRECIPITATION_DEPTH, data.getPrecipitationDepth());
+        values.put(GridEntryValueType.WEATHER_WINDCHILL, data.getWindChill());
+        values.put(GridEntryValueType.WEATHER_WIND_SPEED, data.getWindSpeed());
+        values.put(GridEntryValueType.WEATHER_ATMOSPHERE_HUMIDITY, data.getAtmosphereHumidity());
+        values.put(GridEntryValueType.WEATHER_ATMOSPHERE_PRESSURE, data.getAtmospherePressure());
+        values.put(GridEntryValueType.WEATHER_TEMPERATURE, data.getTemperature());
+        values.put(GridEntryValueType.WEATHER_MAXIMUM_WIND_SPEED, data.getMaximumWindSpeed());
+        values.put(GridEntryValueType.WEATHER_SUNSHINE_DURATION, data.getSunshineDuration());
+        values.put(GridEntryValueType.WEATHER_SNOW_HEIGHT, data.getSnowHeight());
+        values.put(GridEntryValueType.WEATHER_TEMPERATURE_HIGH, data.getTemperatureHigh());
+        values.put(GridEntryValueType.WEATHER_TEMPERATURE_LOW, data.getTemperatureLow());
+        gridEntryValue.setValues(values);
+        gridEntryValue.setSource(new GridEntrySource("NOAA", 1)); // TODO get from JSON
 
-        EdgeEntryData edgeEntryData = new EdgeEntryData();
-        edgeEntryData.updateWithEdgeEntryValue(edgeEntryValue);
+        GridEntryData gridEntryData = new GridEntryData();
+        gridEntryData.updateWithGridEntryValue(gridEntryValue);
 
-        edgeEntry.updateWithEdgeEntryDataForDate(edgeEntryData, new Date(data.getTimestamp()));
+        gridEntry.updateWithGridEntryDataForDate(gridEntryData, new Date(data.getTimestamp()));
 
-        edgeData.updateWithEdgeEntry(edgeEntry);
+        gridData.updateWithGridEntry(gridEntry);
     }
 }

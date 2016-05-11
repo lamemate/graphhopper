@@ -100,7 +100,7 @@ public class DefaultModule extends AbstractModule
 
             bind(RouteSerializer.class).toInstance(new SimpleRouteSerializer(graphHopper.getGraphHopperStorage().getBounds()));
 
-            final WeatherDataUpdater updater = new WeatherDataUpdater(getGraphHopper(), getGraphHopper().getEdgeData(), lock.writeLock());
+            final WeatherDataUpdater updater = new WeatherDataUpdater(getGraphHopper(), getGraphHopper().getGridData(), lock.writeLock());
             bind(WeatherDataUpdater.class).toInstance(updater);
             bind(ObjectMapper.class).toInstance(createMapper());
         } catch (Exception ex)

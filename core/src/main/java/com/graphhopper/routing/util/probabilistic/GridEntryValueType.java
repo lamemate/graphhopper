@@ -1,6 +1,6 @@
 package com.graphhopper.routing.util.probabilistic;
 
-public enum EdgeEntryValueType
+public enum GridEntryValueType
 {
     WEATHER_ATMOSPHERE_HUMIDITY,
     WEATHER_ATMOSPHERE_PRESSURE,

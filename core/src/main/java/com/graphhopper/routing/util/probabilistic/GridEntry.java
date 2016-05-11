@@ -7,7 +7,7 @@ import gnu.trove.set.TIntSet;
 
 import java.util.Date;
 
-public class EdgeEntry
+public class GridEntry
 {
     // Bounding box for the grid
     private final BBox boundingBox;
@@ -16,9 +16,9 @@ public class EdgeEntry
     private final TIntCollection edges;
 
     // Map of list of available values
-    private TMap<Date, EdgeEntryData> values;
+    private TMap<Date, GridEntryData> values;
 
-    public EdgeEntry( BBox boundingBox, TIntSet edges )
+    public GridEntry( BBox boundingBox, TIntSet edges )
     {
         this.boundingBox = boundingBox;
         this.edges = edges;
@@ -30,13 +30,13 @@ public class EdgeEntry
     }
 
     /**
-     * Returns EdgeEntryData closest to a given time and corresponding EdgeEntryValueType.
+     * Returns GridEntryData closest to a given time and corresponding GridEntryValueType.
      *
      * @param date
-     * @param edgeEntryValueType
+     * @param gridEntryValueType
      * @return
      */
-    public EdgeEntryData getClosestSourcesForDateAndValueType( final Date date, EdgeEntryValueType edgeEntryValueType)
+    public GridEntryData getClosestSourcesForDateAndValueType( final Date date, GridEntryValueType gridEntryValueType )
     {
         long minDiff = Long.MAX_VALUE;
         Date closestDate = date;
@@ -44,7 +44,7 @@ public class EdgeEntry
         for (Date keyDate : values.keySet())
         {
             final long diff = Math.abs(keyDate.getTime() - date.getTime());
-            if (diff <= minDiff && values.get(keyDate).containsEdgeEntryValue(edgeEntryValueType))
+            if (diff <= minDiff && values.get(keyDate).containsGridEntryValue(gridEntryValueType))
             {
                 minDiff = diff;
                 closestDate = keyDate;
@@ -53,9 +53,9 @@ public class EdgeEntry
         return values.get(closestDate);
     }
 
-    public void updateWithEdgeEntryDataForDate(EdgeEntryData edgeEntryData, Date date)
+    public void updateWithGridEntryDataForDate( GridEntryData gridEntryData, Date date)
     {
-        this.values.put(date, edgeEntryData);
+        this.values.put(date, gridEntryData);
         // cleanup old entries on each update
         for (Date keyDate : this.values.keySet())
         {
@@ -66,7 +66,7 @@ public class EdgeEntry
         }
     }
 
-    public void updateValues(TMap<Date, EdgeEntryData> values)
+    public void updateValues(TMap<Date, GridEntryData> values)
     {
         this.values.putAll(values);
     }
@@ -81,12 +81,12 @@ public class EdgeEntry
         return edges;
     }
 
-    public TMap<Date, EdgeEntryData> getValues()
+    public TMap<Date, GridEntryData> getValues()
     {
         return values;
     }
 
-    public void setValues( TMap<Date, EdgeEntryData> values )
+    public void setValues( TMap<Date, GridEntryData> values )
     {
         this.values = values;
     }
@@ -97,9 +97,9 @@ public class EdgeEntry
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        EdgeEntry edgeEntry = (EdgeEntry) o;
+        GridEntry gridEntry = (GridEntry) o;
 
-        return boundingBox.equals(edgeEntry.boundingBox);
+        return boundingBox.equals(gridEntry.boundingBox);
 
     }
 
