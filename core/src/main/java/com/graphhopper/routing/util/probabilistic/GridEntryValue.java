@@ -1,20 +1,20 @@
 package com.graphhopper.routing.util.probabilistic;
 
-import gnu.trove.map.TMap;
-import gnu.trove.map.hash.THashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class GridEntryValue
 {
     private GridEntrySource source;
 
-    private TMap<GridEntryValueType, Double> values;
+    private ConcurrentMap<GridEntryValueType, Double> values;
 
     public GridEntryValue()
     {
-        this.values = new THashMap<GridEntryValueType, Double>();
+        this.values = new ConcurrentHashMap<GridEntryValueType, Double>();
     }
 
-    public void updateValues(TMap<GridEntryValueType, Double> values)
+    public void updateValues(ConcurrentMap<GridEntryValueType, Double> values)
     {
         this.values.putAll(values);
     }
@@ -29,12 +29,12 @@ public class GridEntryValue
         this.source = source;
     }
 
-    public TMap<GridEntryValueType, Double> getValues()
+    public ConcurrentMap<GridEntryValueType, Double> getValues()
     {
         return values;
     }
 
-    public void setValues( TMap<GridEntryValueType, Double> values )
+    public void setValues( ConcurrentMap<GridEntryValueType, Double> values )
     {
         this.values = values;
     }

@@ -2,11 +2,11 @@ package com.graphhopper.routing.util.probabilistic;
 
 import com.graphhopper.util.shapes.BBox;
 import gnu.trove.TIntCollection;
-import gnu.trove.map.TMap;
-import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.TIntSet;
 
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class GridEntry
 {
@@ -17,13 +17,13 @@ public class GridEntry
     private final TIntCollection edges;
 
     // Map of list of available values
-    private TMap<Date, GridEntryData> values;
+    private ConcurrentMap<Date, GridEntryData> values;
 
     public GridEntry( BBox boundingBox, TIntSet edges )
     {
         this.boundingBox = boundingBox;
         this.edges = edges;
-        this.values = new THashMap<Date, GridEntryData>();
+        this.values = new ConcurrentHashMap<Date, GridEntryData>();
     }
 
     public boolean containsEdgeId(int id)
@@ -68,7 +68,7 @@ public class GridEntry
         }
     }
 
-    public void updateValues(TMap<Date, GridEntryData> values)
+    public void updateValues(ConcurrentMap<Date, GridEntryData> values)
     {
         this.values.putAll(values);
     }
@@ -83,12 +83,12 @@ public class GridEntry
         return edges;
     }
 
-    public TMap<Date, GridEntryData> getValues()
+    public ConcurrentMap<Date, GridEntryData> getValues()
     {
         return values;
     }
 
-    public void setValues( TMap<Date, GridEntryData> values )
+    public void setValues( ConcurrentMap<Date, GridEntryData> values )
     {
         this.values = values;
     }

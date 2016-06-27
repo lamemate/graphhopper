@@ -23,7 +23,13 @@
         <dependency>
             <groupId>com.graphhopper</groupId>
             <artifactId>graphhopper</artifactId>
-            <version>${project.parent.version}</version>            
+            <version>${project.parent.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>
@@ -101,17 +107,6 @@
             <artifactId>importer</artifactId>
             <version>0.2.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.6.5</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.6.5</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -150,7 +145,7 @@
                     </execution>
                 </executions>
             </plugin>
- 
+
         </plugins>
     </build>
 

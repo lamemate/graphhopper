@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
@@ -57,6 +59,11 @@ public class WeatherDataUpdater
         double gridLat = gridMetaData.getGridLat();
         double gridLon = gridMetaData.getGridLon();
 
+        if (!graph.getBounds().contains(gridLat, gridLon))
+        {
+            return;
+        }
+
         BBox bBox = new BBox(gridLon - 0.125, gridLon + 0.125, gridLat - 0.125, gridLat + 0.125);
         TIntSet edges = new TIntHashSet(8000); // totally guessed value
 
@@ -77,7 +84,7 @@ public class WeatherDataUpdater
         GridEntry gridEntry = new GridEntry(bBox, edges);
 
         GridEntryValue gridEntryValue = new GridEntryValue();
-        TMap<GridEntryValueType, Double> values = new THashMap<GridEntryValueType, Double>(12);
+        ConcurrentMap<GridEntryValueType, Double> values = new ConcurrentHashMap<GridEntryValueType, Double>(12);
         values.put(GridEntryValueType.WEATHER_CLOUDAGE, data.getCloudage());
         values.put(GridEntryValueType.WEATHER_PRECIPITATION_DEPTH, data.getPrecipitationDepth());
         values.put(GridEntryValueType.WEATHER_WINDCHILL, data.getWindChill());

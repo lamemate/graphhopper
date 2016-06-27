@@ -1400,6 +1400,10 @@ public class GraphHopper implements GraphHopperAPI
 
     public GridData getGridData()
     {
+        if (gridData == null)
+        {
+            return new GridData();
+        }
         return gridData;
     }
 
