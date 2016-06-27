@@ -1,12 +1,18 @@
 package com.graphhopper.routing.util.probabilistic;
 
 import gnu.trove.map.TMap;
+import gnu.trove.map.hash.THashMap;
 
 public class GridEntryValue
 {
     private GridEntrySource source;
 
     private TMap<GridEntryValueType, Double> values;
+
+    public GridEntryValue()
+    {
+        this.values = new THashMap<GridEntryValueType, Double>();
+    }
 
     public void updateValues(TMap<GridEntryValueType, Double> values)
     {

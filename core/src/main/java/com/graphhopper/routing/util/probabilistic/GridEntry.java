@@ -3,6 +3,7 @@ package com.graphhopper.routing.util.probabilistic;
 import com.graphhopper.util.shapes.BBox;
 import gnu.trove.TIntCollection;
 import gnu.trove.map.TMap;
+import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.TIntSet;
 
 import java.util.Date;
@@ -22,6 +23,7 @@ public class GridEntry
     {
         this.boundingBox = boundingBox;
         this.edges = edges;
+        this.values = new THashMap<Date, GridEntryData>();
     }
 
     public boolean containsEdgeId(int id)
