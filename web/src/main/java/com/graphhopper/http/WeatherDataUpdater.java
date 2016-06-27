@@ -7,6 +7,7 @@ import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.shapes.BBox;
+import de.fu_berlin.agdb.importer.noaa.NOAAImporter;
 import de.fu_berlin.agdb.importer.payload.GridMetaData;
 import de.fu_berlin.agdb.importer.payload.LocationWeatherData;
 import gnu.trove.map.TMap;
@@ -17,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
 public class WeatherDataUpdater
@@ -26,7 +29,7 @@ public class WeatherDataUpdater
     private final Graph graph;
     private final NodeAccess nodeAccess;
     private final Lock writeLock;
-    private final int seconds = 150;
+    private final int seconds = 86400;
 
     private GridData gridData;
 
@@ -96,5 +99,54 @@ public class WeatherDataUpdater
         gridEntry.updateWithGridEntryDataForDate(gridEntryData, new Date(data.getTimestamp()));
 
         gridData.updateWithGridEntry(gridEntry);
+    }
+
+    private final AtomicBoolean running = new AtomicBoolean(false);
+
+    public void start()
+    {
+        if (running.get())
+        {
+            return;
+        }
+
+        running.set(true);
+        new Thread("WeatherDataUpdater" + seconds) {
+            @Override
+            public void run() {
+                logger.info("Fetching data every " + seconds + " seconds");
+                while(running.get())
+                {
+                    try
+                    {
+                        logger.info("Fetching new weather data");
+                        List<LocationWeatherData> locationWeatherDataList = new NOAAImporter()
+                                .getWeatherDataForLocationsRespectingTimeout(null);
+                        for (LocationWeatherData data : locationWeatherDataList)
+                        {
+                            feedData(data);
+                        }
+                        try
+                        {
+                            Thread.sleep(seconds * 1000);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            logger.info("WeatherDataUpdater thread stopped");
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        logger.error("Problem while fetching weather data");
+                    }
+                }
+            }
+        }.start();
+    }
+
+    public void stop()
+    {
+        running.set(false);
     }
 }
