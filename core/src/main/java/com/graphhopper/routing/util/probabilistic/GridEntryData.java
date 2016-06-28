@@ -15,28 +15,36 @@ public class GridEntryData
 
     public boolean containsGridEntryValue( GridEntryValueType gridEntryValueType )
     {
-        for (GridEntryValue value : entries)
+        synchronized (entries)
         {
-            if (value.getValues().containsKey(gridEntryValueType))
+            for (GridEntryValue value : entries)
             {
-                return true;
+                if (value.getValues().containsKey(gridEntryValueType))
+                {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
+
     }
 
     public void updateWithGridEntryValue( GridEntryValue gridEntryValue )
     {
-        if (!entries.add(gridEntryValue))
+        synchronized (entries)
         {
-            for (GridEntryValue value : entries)
+            if (!entries.add(gridEntryValue))
             {
-                if (value.equals(gridEntryValue))
+                for (GridEntryValue value : entries)
                 {
-                    value.updateValues(gridEntryValue.getValues());
+                    if (value.equals(gridEntryValue))
+                    {
+                        value.updateValues(gridEntryValue.getValues());
+                    }
                 }
             }
         }
+
     }
 
     public double calculateMeanValueForGridEntryValueType(GridEntryValueType type)

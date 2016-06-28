@@ -16,39 +16,51 @@ public class GridData
 
     public GridEntry getEntryForBoundingBox( BBox boundingBox)
     {
-        for ( GridEntry entry : entries)
+        synchronized (entries)
         {
-            if (boundingBox.equals(entry.getBoundingBox()))
+            for ( GridEntry entry : entries)
             {
-                return entry;
+                if (boundingBox.equals(entry.getBoundingBox()))
+                {
+                    return entry;
+                }
             }
+            return null;
         }
-        return null;
+
     }
 
     public GridEntry getGridEntryForEdgeId( int id)
     {
-        for (GridEntry entry : entries)
+        synchronized (entries)
         {
-            if (entry.containsEdgeId(id))
+            for (GridEntry entry : entries)
             {
-                return entry;
+                if (entry.containsEdgeId(id))
+                {
+                    return entry;
+                }
             }
+            return null;
         }
-        return null;
+
     }
 
     public void updateWithGridEntry( GridEntry gridEntry )
     {
-        if (!entries.add(gridEntry))
+        synchronized (entries)
         {
-            for (GridEntry entry : entries)
+            if (!entries.add(gridEntry))
             {
-                if (entry.equals(gridEntry))
+                for (GridEntry entry : entries)
                 {
-                    entry.updateValues(gridEntry.getValues());
+                    if (entry.equals(gridEntry))
+                    {
+                        entry.updateValues(gridEntry.getValues());
+                    }
                 }
             }
         }
+
     }
 }

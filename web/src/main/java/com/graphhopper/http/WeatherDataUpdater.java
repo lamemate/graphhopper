@@ -1,5 +1,6 @@
 package com.graphhopper.http;
 
+import com.google.common.collect.Lists;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.routing.util.probabilistic.*;
 import com.graphhopper.storage.Graph;
@@ -17,6 +18,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,32 +30,22 @@ public class WeatherDataUpdater
 {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    public static final int WORKER_THREADS = 24;
+
     private final Graph graph;
     private final NodeAccess nodeAccess;
-    private final Lock writeLock;
     private final int seconds = 86400;
 
     private GridData gridData;
 
-    public WeatherDataUpdater( GraphHopper hopper, GridData gridData, Lock writeLock )
+    public WeatherDataUpdater( GraphHopper hopper, GridData gridData )
     {
         this.graph = hopper.getGraphHopperStorage();
         this.nodeAccess = graph.getNodeAccess();
         this.gridData = gridData;
-        this.writeLock = writeLock;
     }
 
-    public void feedData(LocationWeatherData data)
-    {
-        writeLock.lock();
-        try {
-            feedLocked(data);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-    private void feedLocked(LocationWeatherData data)
+    private void feedData(LocationWeatherData data)
     {
         GridMetaData gridMetaData = (GridMetaData) data.getLocationMetaData();
         double gridLat = gridMetaData.getGridLat();
@@ -139,9 +131,9 @@ public class WeatherDataUpdater
                         logger.info("Fetching new weather data");
                         List<LocationWeatherData> locationWeatherDataList = new NOAAImporter()
                                 .getWeatherDataForLocationsRespectingTimeout(null);
-                        for (LocationWeatherData data : locationWeatherDataList)
+                        for (List<LocationWeatherData> partition : Lists.partition(locationWeatherDataList, locationWeatherDataList.size() / WORKER_THREADS))
                         {
-                            feedData(data);
+                            new Thread(new PartitionWorker(partition)).start();
                         }
                         try
                         {
@@ -165,5 +157,25 @@ public class WeatherDataUpdater
     public void stop()
     {
         running.set(false);
+    }
+
+    private class PartitionWorker implements Runnable
+    {
+        private List<LocationWeatherData> weatherData;
+
+        public PartitionWorker(List<LocationWeatherData> weatherData)
+        {
+            this.weatherData = weatherData;
+            Collections.shuffle(weatherData);
+        }
+
+        @Override
+        public void run()
+        {
+            for (LocationWeatherData data : weatherData)
+            {
+                feedData(data);
+            }
+        }
     }
 }
