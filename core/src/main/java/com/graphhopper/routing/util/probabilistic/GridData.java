@@ -18,7 +18,7 @@ public class GridData
     {
         for ( GridEntry entry : entries)
         {
-            if (entry.getBoundingBox().equals(boundingBox))
+            if (boundingBox.equals(entry.getBoundingBox()))
             {
                 return entry;
             }

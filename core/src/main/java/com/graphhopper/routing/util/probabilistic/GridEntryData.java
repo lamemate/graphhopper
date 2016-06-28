@@ -44,7 +44,7 @@ public class GridEntryData
         double mean = 0;
         for (GridEntryValue value : entries)
         {
-            mean = value.getSource().getProbability() * value.getValues().get(type);
+            mean += value.getSource().getProbability() * value.getValues().get(type);
         }
         return mean;
     }

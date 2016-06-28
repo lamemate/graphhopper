@@ -58,37 +58,18 @@ public class WeatherDataUpdater
         GridMetaData gridMetaData = (GridMetaData) data.getLocationMetaData();
         double gridLat = gridMetaData.getGridLat();
         double gridLon = gridMetaData.getGridLon();
+        logger.info("Processing " + new Date(data.getTimestamp()) + ": " + gridLat + "N " + gridLon + "E");
 
         if (!graph.getBounds().contains(gridLat, gridLon))
         {
             return;
         }
 
-        BBox bBox = new BBox(gridLon - 0.125, gridLon + 0.125, gridLat - 0.125, gridLat + 0.125);
-        TIntSet edges = new TIntHashSet(8000); // totally guessed value
-
-        EdgeExplorer explorer = graph.createEdgeExplorer();
-
-        for(int nodeIndex = 0; nodeIndex < graph.getNodes(); nodeIndex++)
-        {
-            EdgeIterator edgeIterator = explorer.setBaseNode(nodeIndex);
-            while (edgeIterator.next())
-            {
-                if(bBox.contains(nodeAccess.getLat(nodeIndex), nodeAccess.getLon(nodeIndex)))
-                {
-                    edges.add(edgeIterator.getEdge());
-                }
-            }
-        }
-
-        GridEntry gridEntry = new GridEntry(bBox, edges);
-
         GridEntryValue gridEntryValue = new GridEntryValue();
         ConcurrentMap<GridEntryValueType, Double> values = new ConcurrentHashMap<GridEntryValueType, Double>(12);
         values.put(GridEntryValueType.WEATHER_CLOUDAGE, data.getCloudage());
         values.put(GridEntryValueType.WEATHER_PRECIPITATION_DEPTH, data.getPrecipitationDepth());
         values.put(GridEntryValueType.WEATHER_WINDCHILL, data.getWindChill());
-        values.put(GridEntryValueType.WEATHER_WIND_SPEED, data.getWindSpeed());
         values.put(GridEntryValueType.WEATHER_ATMOSPHERE_HUMIDITY, data.getAtmosphereHumidity());
         values.put(GridEntryValueType.WEATHER_ATMOSPHERE_PRESSURE, data.getAtmospherePressure());
         values.put(GridEntryValueType.WEATHER_TEMPERATURE, data.getTemperature());
@@ -103,9 +84,38 @@ public class WeatherDataUpdater
         GridEntryData gridEntryData = new GridEntryData();
         gridEntryData.updateWithGridEntryValue(gridEntryValue);
 
-        gridEntry.updateWithGridEntryDataForDate(gridEntryData, new Date(data.getTimestamp()));
+        BBox bBox = new BBox(gridLon - 0.125, gridLon + 0.125, gridLat - 0.125, gridLat + 0.125);
 
-        gridData.updateWithGridEntry(gridEntry);
+        GridEntry existingGridEntry = gridData.getEntryForBoundingBox(bBox);
+
+        if (existingGridEntry == null) // No mapping yet
+        {
+            TIntSet edges = new TIntHashSet(8000); // totally guessed value
+
+            EdgeExplorer explorer = graph.createEdgeExplorer();
+
+            for(int nodeIndex = 0; nodeIndex < graph.getNodes(); nodeIndex++)
+            {
+                EdgeIterator edgeIterator = explorer.setBaseNode(nodeIndex);
+                while (edgeIterator.next())
+                {
+                    if(bBox.contains(nodeAccess.getLat(nodeIndex), nodeAccess.getLon(nodeIndex)))
+                    {
+                        edges.add(edgeIterator.getEdge());
+                    }
+                }
+            }
+
+            GridEntry gridEntry = new GridEntry(bBox, edges);
+            gridEntry.updateWithGridEntryDataForDate(gridEntryData, new Date(data.getTimestamp()));
+
+            gridData.updateWithGridEntry(gridEntry);
+        }
+        else // update data
+        {
+            existingGridEntry.updateWithGridEntryDataForDate(gridEntryData, new Date(data.getTimestamp()));
+            gridData.updateWithGridEntry(existingGridEntry);
+        }
     }
 
     private final AtomicBoolean running = new AtomicBoolean(false);
