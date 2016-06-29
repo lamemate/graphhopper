@@ -68,8 +68,5 @@ public class GHServletModule extends ServletModule
 
         serve("/nearest*").with(NearestServlet.class);
         bind(NearestServlet.class).in(Singleton.class);
-
-        serve("/datafeed*").with(WeatherDataFeedServlet.class);
-        bind(WeatherDataFeedServlet.class).in(Singleton.class);
     }
 }
