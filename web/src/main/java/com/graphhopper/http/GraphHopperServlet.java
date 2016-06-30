@@ -1,9 +1,9 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
  * 
- *  GraphHopper licenses this file to you under the Apache License, 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
  * 
@@ -22,7 +22,7 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.routing.util.FlagEncoder;
-import com.graphhopper.routing.util.WeightingMap;
+import com.graphhopper.routing.util.HintsMap;
 import com.graphhopper.util.StopWatch;
 import com.graphhopper.util.shapes.GHPoint;
 import org.json.JSONObject;
@@ -79,18 +79,19 @@ public class GraphHopperServlet extends GHBaseServlet
         String weighting = getParam(httpReq, "weighting", "fastest");
         String algoStr = getParam(httpReq, "algorithm", "");
         String localeStr = getParam(httpReq, "locale", "en");
+
+        StopWatch sw = new StopWatch().start();
+        List<Throwable> errorList = new ArrayList<Throwable>();
         List<Double> favoredHeadings = Collections.EMPTY_LIST;
         try
         {
             favoredHeadings = getDoubleParamList(httpReq, "heading");
 
-        } catch (java.lang.NumberFormatException e)
+        } catch (NumberFormatException e)
         {
-            throw new RuntimeException(e);
+            errorList.add(new IllegalArgumentException("heading list in from format: " + e.getMessage()));
         }
 
-        StopWatch sw = new StopWatch().start();
-        List<Throwable> errorList = new ArrayList<Throwable>();
         if (!hopper.getEncodingManager().supports(vehicleStr))
         {
             errorList.add(new IllegalArgumentException("Vehicle not supported: " + vehicleStr));
@@ -179,7 +180,6 @@ public class GraphHopperServlet extends GHBaseServlet
             Map<String, Object> map = routeSerializer.toJSON(ghRsp, calcPoints, pointsEncoded,
                     enableElevation, enableInstructions);
 
-            // this makes java client 0.5 fail so not in 0.6 but in 0.7
             Object infoMap = map.get("info");
             if (infoMap != null)
                 ((Map) infoMap).put("took", Math.round(took * 1000));
@@ -199,7 +199,11 @@ public class GraphHopperServlet extends GHBaseServlet
         boolean withTrack = getBooleanParam(req, "gpx.track", true);
         boolean withWayPoints = getBooleanParam(req, "gpx.waypoints", false);
         res.setCharacterEncoding("UTF-8");
-        res.setContentType("application/xml");
+        if ("application/xml".equals(req.getContentType()))
+            res.setContentType("application/xml");
+        else
+            res.setContentType("application/gpx+xml");
+
         String trackName = getParam(req, "trackname", "GraphHopper Track");
         res.setHeader("Content-Disposition", "attachment;filename=" + "GraphHopper.gpx");
         long time = getLongParam(req, "millis", System.currentTimeMillis());
@@ -272,7 +276,7 @@ public class GraphHopperServlet extends GHBaseServlet
 
     protected void initHints( GHRequest request, Map<String, String[]> parameterMap )
     {
-        WeightingMap m = request.getHints();
+        HintsMap m = request.getHints();
         for (Entry<String, String[]> e : parameterMap.entrySet())
         {
             if (e.getValue().length == 1)
