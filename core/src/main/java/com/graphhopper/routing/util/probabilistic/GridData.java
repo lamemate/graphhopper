@@ -14,11 +14,11 @@ public class GridData
         this.entries = new THashSet<GridEntry>(1500); // about the amount of grids
     }
 
-    public GridEntry getEntryForBoundingBox( BBox boundingBox)
+    public GridEntry getEntryForBoundingBox( BBox boundingBox )
     {
         synchronized (entries)
         {
-            for ( GridEntry entry : entries)
+            for (GridEntry entry : entries)
             {
                 if (boundingBox.equals(entry.getBoundingBox()))
                 {
@@ -30,7 +30,7 @@ public class GridData
 
     }
 
-    public GridEntry getGridEntryForEdgeId( int id)
+    public GridEntry getGridEntryForEdgeId( int id )
     {
         synchronized (entries)
         {

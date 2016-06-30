@@ -26,7 +26,7 @@ public class GridEntry
         this.values = new ConcurrentHashMap<Date, GridEntryData>();
     }
 
-    public boolean containsEdgeId(int id)
+    public boolean containsEdgeId( int id )
     {
         return edges.contains(id);
     }
@@ -55,7 +55,7 @@ public class GridEntry
         return values.get(closestDate);
     }
 
-    public void updateWithGridEntryDataForDate( GridEntryData gridEntryData, Date date)
+    public void updateWithGridEntryDataForDate( GridEntryData gridEntryData, Date date )
     {
         this.values.put(date, gridEntryData);
         // cleanup old entries on each update
@@ -68,7 +68,7 @@ public class GridEntry
         }
     }
 
-    public void updateValues(ConcurrentMap<Date, GridEntryData> values)
+    public void updateValues( ConcurrentMap<Date, GridEntryData> values )
     {
         this.values.putAll(values);
     }

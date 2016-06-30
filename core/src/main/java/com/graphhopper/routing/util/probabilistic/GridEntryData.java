@@ -47,7 +47,7 @@ public class GridEntryData
 
     }
 
-    public double calculateMeanValueForGridEntryValueType(GridEntryValueType type)
+    public double calculateMeanValueForGridEntryValueType( GridEntryValueType type )
     {
         double mean = 0;
         for (GridEntryValue value : entries)

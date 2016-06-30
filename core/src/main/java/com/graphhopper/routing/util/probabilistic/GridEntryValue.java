@@ -14,7 +14,7 @@ public class GridEntryValue
         this.values = new ConcurrentHashMap<GridEntryValueType, Double>();
     }
 
-    public void updateValues(ConcurrentMap<GridEntryValueType, Double> values)
+    public void updateValues( ConcurrentMap<GridEntryValueType, Double> values )
     {
         this.values.putAll(values);
     }

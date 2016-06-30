@@ -45,7 +45,7 @@ public class WeatherDataUpdater
         this.gridData = gridData;
     }
 
-    private void feedData(LocationWeatherData data)
+    private void feedData( LocationWeatherData data )
     {
         GridMetaData gridMetaData = (GridMetaData) data.getLocationMetaData();
         double gridLat = gridMetaData.getGridLat();
@@ -86,12 +86,12 @@ public class WeatherDataUpdater
 
             EdgeExplorer explorer = graph.createEdgeExplorer();
 
-            for(int nodeIndex = 0; nodeIndex < graph.getNodes(); nodeIndex++)
+            for (int nodeIndex = 0; nodeIndex < graph.getNodes(); nodeIndex++)
             {
                 EdgeIterator edgeIterator = explorer.setBaseNode(nodeIndex);
                 while (edgeIterator.next())
                 {
-                    if(bBox.contains(nodeAccess.getLat(nodeIndex), nodeAccess.getLon(nodeIndex)))
+                    if (bBox.contains(nodeAccess.getLat(nodeIndex), nodeAccess.getLon(nodeIndex)))
                     {
                         edges.add(edgeIterator.getEdge());
                     }
@@ -102,8 +102,7 @@ public class WeatherDataUpdater
             gridEntry.updateWithGridEntryDataForDate(gridEntryData, new Date(data.getTimestamp()));
 
             gridData.updateWithGridEntry(gridEntry);
-        }
-        else // update data
+        } else // update data
         {
             existingGridEntry.updateWithGridEntryDataForDate(gridEntryData, new Date(data.getTimestamp()));
             gridData.updateWithGridEntry(existingGridEntry);
@@ -120,11 +119,13 @@ public class WeatherDataUpdater
         }
 
         running.set(true);
-        new Thread("WeatherDataUpdater" + seconds) {
+        new Thread("WeatherDataUpdater" + seconds)
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 logger.info("Fetching data every " + seconds + " seconds");
-                while(running.get())
+                while (running.get())
                 {
                     try
                     {
@@ -138,14 +139,12 @@ public class WeatherDataUpdater
                         try
                         {
                             Thread.sleep(seconds * 1000);
-                        }
-                        catch (InterruptedException e)
+                        } catch (InterruptedException e)
                         {
                             logger.info("WeatherDataUpdater thread stopped");
                             break;
                         }
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         logger.error("Problem while fetching weather data");
                     }
@@ -163,7 +162,7 @@ public class WeatherDataUpdater
     {
         private List<LocationWeatherData> weatherData;
 
-        public PartitionWorker(List<LocationWeatherData> weatherData)
+        public PartitionWorker( List<LocationWeatherData> weatherData )
         {
             this.weatherData = weatherData;
             Collections.shuffle(weatherData);

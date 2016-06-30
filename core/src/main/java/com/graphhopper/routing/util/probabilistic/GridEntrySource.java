@@ -6,7 +6,7 @@ public class GridEntrySource
 
     private double probability;
 
-    public GridEntrySource( String source, double probability)
+    public GridEntrySource( String source, double probability )
     {
         if (source == null || source.isEmpty())
         {

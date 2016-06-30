@@ -21,14 +21,11 @@ public class ProbabilisticWeighting extends FastestWeighting
     private final String VALUE_BOUND;
     private final String BLOCKING_MODE;
 
-    private final FlagEncoder encoder;
-
     private final GridData gridData;
 
     public ProbabilisticWeighting( FlagEncoder encoder, PMap pMap, GridData gridData )
     {
         super(encoder);
-        this.encoder = encoder;
 
         if (pMap == null)
         {
@@ -47,7 +44,7 @@ public class ProbabilisticWeighting extends FastestWeighting
     }
 
     @Override
-    public double calcWeight(EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId)
+    public double calcWeight( EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId )
     {
         // get super weight from fastest weighting implementation
         double w = super.calcWeight(edgeState, reverse, prevOrNextEdgeId);
@@ -66,8 +63,7 @@ public class ProbabilisticWeighting extends FastestWeighting
                 {
                     // Value meets bound criteria, return super (fastest) weighting
                     return w;
-                }
-                else
+                } else
                 {
                     // Value did not meet bound criteria, reroute according to blocking mode
                     if ("block".equalsIgnoreCase(BLOCKING_MODE))
@@ -83,26 +79,8 @@ public class ProbabilisticWeighting extends FastestWeighting
     }
 
     @Override
-    public FlagEncoder getFlagEncoder()
-    {
-        return encoder;
-    }
-
-    @Override
     public String getName()
     {
         return "probabilistic";
-    }
-
-    @Override
-    public boolean matches(String weightingAsStr, FlagEncoder encoder)
-    {
-        return getName().equalsIgnoreCase(weightingAsStr) && this.encoder.equals(encoder);
-    }
-
-    @Override
-    public String toString()
-    {
-        return "PROBABILISTIC";
     }
 }
