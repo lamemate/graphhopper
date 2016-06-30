@@ -61,8 +61,8 @@ public class ProbabilisticWeighting extends FastestWeighting
                 // calculate the mean value
                 double edgeMeanValue = gridEntryData.calculateMeanValueForGridEntryValueType(GridEntryValueType.valueOf(VALUE_TYPE));
 
-                if (("lower".equalsIgnoreCase(VALUE_BOUND) && VALUE >= edgeMeanValue)
-                        || ("upper".equalsIgnoreCase(VALUE_BOUND) && VALUE <= edgeMeanValue))
+                if (("lower".equalsIgnoreCase(VALUE_BOUND) && VALUE <= edgeMeanValue)
+                        || ("upper".equalsIgnoreCase(VALUE_BOUND) && VALUE >= edgeMeanValue))
                 {
                     // Value meets bound criteria, return super (fastest) weighting
                     return w;
