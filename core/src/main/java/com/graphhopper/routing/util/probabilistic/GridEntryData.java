@@ -1,7 +1,6 @@
 package com.graphhopper.routing.util.probabilistic;
 
-import gnu.trove.set.hash.THashSet;
-
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class GridEntryData
@@ -10,7 +9,7 @@ public class GridEntryData
 
     public GridEntryData()
     {
-        this.entries = new THashSet<GridEntryValue>();
+        this.entries = new LinkedHashSet<>();
     }
 
     public boolean containsGridEntryValue( GridEntryValueType gridEntryValueType )

@@ -1,8 +1,8 @@
 package com.graphhopper.routing.util.probabilistic;
 
 import com.graphhopper.util.shapes.BBox;
-import gnu.trove.set.hash.THashSet;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class GridData
@@ -11,7 +11,7 @@ public class GridData
 
     public GridData()
     {
-        this.entries = new THashSet<GridEntry>(1500); // about the amount of grids
+        this.entries = new LinkedHashSet<>(1500); // about the amount of grids
     }
 
     public GridEntry getEntryForBoundingBox( BBox boundingBox )
