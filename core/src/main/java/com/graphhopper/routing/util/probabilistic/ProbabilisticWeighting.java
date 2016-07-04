@@ -20,6 +20,7 @@ public class ProbabilisticWeighting extends FastestWeighting
     private final String VALUE_TYPE;
     private final String VALUE_BOUND;
     private final String BLOCKING_MODE;
+    private long TIME; // in s
 
     private final double edgePenaltyFactor = 5.0;
 
@@ -37,6 +38,7 @@ public class ProbabilisticWeighting extends FastestWeighting
         this.VALUE_TYPE = pMap.get("user_value_type", GridEntryValueType.WEATHER_TEMPERATURE.toString());
         this.VALUE_BOUND = pMap.get("user_value_bound", "lower");
         this.BLOCKING_MODE = pMap.get("user_blocking_mode", "block");
+        this.TIME = pMap.getLong("user_time", System.currentTimeMillis() / 1000);
 
         if (gridData == null)
         {
@@ -54,7 +56,7 @@ public class ProbabilisticWeighting extends FastestWeighting
         GridEntry gridEntry = gridData.getGridEntryForEdgeId(edgeState.getEdge());
         if (gridEntry != null)
         {
-            GridEntryData gridEntryData = gridEntry.getClosestSourcesForDateAndValueType(new Date(), GridEntryValueType.valueOf(VALUE_TYPE)); // TODO actual date!
+            GridEntryData gridEntryData = gridEntry.getClosestSourcesForDateAndValueType(new Date(TIME * 1000), GridEntryValueType.valueOf(VALUE_TYPE)); // TODO actual date!
             if (gridEntryData != null)
             {
                 // calculate the mean value
@@ -63,6 +65,8 @@ public class ProbabilisticWeighting extends FastestWeighting
                 if (("lower".equalsIgnoreCase(VALUE_BOUND) && VALUE <= edgeMeanValue)
                         || ("upper".equalsIgnoreCase(VALUE_BOUND) && VALUE >= edgeMeanValue))
                 {
+                    // advance time
+                    TIME += w;
                     // Value meets bound criteria, return super (fastest) weighting
                     return w;
                 } else
@@ -72,10 +76,14 @@ public class ProbabilisticWeighting extends FastestWeighting
                     {
                         return Double.POSITIVE_INFINITY;
                     }
+                    // advance time
+                    TIME += w;
                     return w * edgePenaltyFactor * (1 + Math.abs(VALUE - edgeMeanValue)); // TODO userdefined? good value?
                 }
             }
         }
+        // advance time
+        TIME += w;
         // No data found, return super (fastest) weighting
         return w;
     }
