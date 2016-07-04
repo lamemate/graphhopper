@@ -21,6 +21,8 @@ public class ProbabilisticWeighting extends FastestWeighting
     private final String VALUE_BOUND;
     private final String BLOCKING_MODE;
 
+    private final double edgePenaltyFactor = 5.0;
+
     private final GridData gridData;
 
     public ProbabilisticWeighting( FlagEncoder encoder, PMap pMap, GridData gridData )
@@ -70,7 +72,7 @@ public class ProbabilisticWeighting extends FastestWeighting
                     {
                         return Double.POSITIVE_INFINITY;
                     }
-                    return w * 1000; // TODO userdefined? good value?
+                    return w * edgePenaltyFactor * (1 + Math.abs(VALUE - edgeMeanValue)); // TODO userdefined? good value?
                 }
             }
         }
