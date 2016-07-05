@@ -4,7 +4,9 @@ import com.graphhopper.util.shapes.BBox;
 import gnu.trove.TIntCollection;
 import gnu.trove.set.TIntSet;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,12 +16,12 @@ public class GridEntry
     private final BBox boundingBox;
 
     // All the edge ids belonging to the grid
-    private final TIntCollection edges;
+    private final Set<Integer> edges;
 
     // Map of list of available values
     private ConcurrentMap<Date, GridEntryData> values;
 
-    public GridEntry( BBox boundingBox, TIntSet edges )
+    public GridEntry( BBox boundingBox, Set<Integer> edges )
     {
         this.boundingBox = boundingBox;
         this.edges = edges;
@@ -78,7 +80,7 @@ public class GridEntry
         return boundingBox;
     }
 
-    public TIntCollection getEdges()
+    public Set<Integer> getEdges()
     {
         return edges;
     }

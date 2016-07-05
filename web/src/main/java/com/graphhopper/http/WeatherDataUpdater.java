@@ -18,9 +18,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -82,7 +80,7 @@ public class WeatherDataUpdater
 
         if (existingGridEntry == null) // No mapping yet
         {
-            TIntSet edges = new TIntHashSet(8000); // totally guessed value
+            Set<Integer> edges = new HashSet<>();
 
             EdgeExplorer explorer = graph.createEdgeExplorer();
 
