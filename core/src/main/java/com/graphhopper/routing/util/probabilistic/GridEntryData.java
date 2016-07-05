@@ -7,6 +7,8 @@ public class GridEntryData
 {
     private Set<GridEntryValue> entries;
 
+    private GridEntryValue lastValue;
+
     public GridEntryData()
     {
         this.entries = new LinkedHashSet<>();
@@ -14,12 +16,17 @@ public class GridEntryData
 
     public boolean containsGridEntryValue( GridEntryValueType gridEntryValueType )
     {
+        if (lastValue != null && lastValue.getValues().containsKey(gridEntryValueType))
+        {
+            return true;
+        }
         synchronized (entries)
         {
             for (GridEntryValue value : entries)
             {
                 if (value.getValues().containsKey(gridEntryValueType))
                 {
+                    lastValue = value;
                     return true;
                 }
             }
