@@ -1,10 +1,11 @@
 package com.graphhopper.routing.util.probabilistic;
 
 import com.graphhopper.util.shapes.BBox;
-import com.sun.beans.util.Cache;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class GridData
 {
@@ -12,9 +13,12 @@ public class GridData
 
     private GridEntry lastResult;
 
+    private ConcurrentMap<Integer, GridEntry> edgeCache;
+
     public GridData()
     {
-        this.entries = new LinkedHashSet<>(1500); // about the amount of grids
+        this.entries = new LinkedHashSet<>();
+        this.edgeCache = new ConcurrentHashMap<>();
     }
 
     public GridEntry getEntryForBoundingBox( BBox boundingBox )
@@ -40,27 +44,15 @@ public class GridData
 
     public GridEntry getGridEntryForEdgeId( int id )
     {
-        if (lastResult != null && lastResult.containsEdgeId(id))
-        {
-            return lastResult;
-        }
-        synchronized (entries)
-        {
-            for (GridEntry entry : entries)
-            {
-                if (entry.containsEdgeId(id))
-                {
-                    lastResult = entry;
-                    return entry;
-                }
-            }
-            return null;
-        }
-
+        return edgeCache.get(id);
     }
 
     public void updateWithGridEntry( GridEntry gridEntry )
     {
+        for (int edge : gridEntry.getEdges())
+        {
+            edgeCache.put(edge, gridEntry);
+        }
         synchronized (entries)
         {
             if (!entries.add(gridEntry))
