@@ -49,10 +49,6 @@ public class GridData
 
     public void updateWithGridEntry( GridEntry gridEntry )
     {
-        for (int edge : gridEntry.getEdges())
-        {
-            edgeCache.put(edge, gridEntry);
-        }
         synchronized (entries)
         {
             if (!entries.add(gridEntry))
@@ -63,6 +59,13 @@ public class GridData
                     {
                         entry.updateValues(gridEntry.getValues());
                     }
+                }
+            }
+            else
+            {
+                for (int edge : gridEntry.getEdges())
+                {
+                    edgeCache.put(edge, gridEntry);
                 }
             }
         }
