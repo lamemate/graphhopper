@@ -9,17 +9,24 @@ import java.util.concurrent.ConcurrentMap;
 
 public class GridData
 {
+    private static GridData instance = new GridData();
+
+    private GridData()
+    {
+        this.entries = new LinkedHashSet<>();
+        this.edgeCache = new ConcurrentHashMap<>();
+    }
+
+    public static GridData getInstance()
+    {
+        return instance;
+    }
+
     private Set<GridEntry> entries;
 
     private GridEntry lastResult;
 
     private ConcurrentMap<Integer, GridEntry> edgeCache;
-
-    public GridData()
-    {
-        this.entries = new LinkedHashSet<>();
-        this.edgeCache = new ConcurrentHashMap<>();
-    }
 
     public GridEntry getEntryForBoundingBox( BBox boundingBox )
     {

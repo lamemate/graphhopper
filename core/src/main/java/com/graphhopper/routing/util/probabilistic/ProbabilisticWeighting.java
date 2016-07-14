@@ -26,7 +26,7 @@ public class ProbabilisticWeighting extends FastestWeighting
 
     private final GridData gridData;
 
-    public ProbabilisticWeighting( FlagEncoder encoder, PMap pMap, GridData gridData )
+    public ProbabilisticWeighting( FlagEncoder encoder, PMap pMap )
     {
         super(encoder);
 
@@ -40,11 +40,7 @@ public class ProbabilisticWeighting extends FastestWeighting
         this.BLOCKING_MODE = pMap.get("user_blocking_mode", "block");
         this.TIME = pMap.getLong("user_time", System.currentTimeMillis() / 1000);
 
-        if (gridData == null)
-        {
-            throw new IllegalArgumentException("GridData must not be null!");
-        }
-        this.gridData = gridData;
+        this.gridData = GridData.getInstance();
     }
 
     @Override

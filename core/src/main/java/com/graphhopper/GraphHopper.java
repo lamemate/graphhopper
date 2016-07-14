@@ -98,9 +98,6 @@ public class GraphHopper implements GraphHopperAPI
     private ElevationProvider eleProvider = ElevationProvider.NOOP;
     private FlagEncoderFactory flagEncoderFactory = FlagEncoderFactory.DEFAULT;
 
-    // probabilistic routing
-    private GridData gridData = new GridData();
-
     public GraphHopper()
     {
         chFactoryDecorator.setEnabled(true);
@@ -990,7 +987,7 @@ public class GraphHopper implements GraphHopperAPI
         {
             System.out.println("WEIGHTING: " + weighting);
                 System.out.println("YEAH PROB!");
-                return new ProbabilisticWeighting(encoder, weightingMap, gridData);
+                return new ProbabilisticWeighting(encoder, weightingMap);
         }
 
         throw new IllegalArgumentException("weighting " + weighting + " not supported");
@@ -1244,17 +1241,4 @@ public class GraphHopper implements GraphHopperAPI
             throw new IllegalStateException("Writes are not allowed!");
     }
 
-    public GridData getGridData()
-    {
-        if (gridData == null)
-        {
-            return new GridData();
-        }
-        return gridData;
-    }
-
-    public void setGridData( GridData gridData )
-    {
-        this.gridData = gridData;
-    }
 }
