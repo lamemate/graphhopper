@@ -61,8 +61,6 @@ public class ProbabilisticWeighting extends FastestWeighting
                 if (("lower".equalsIgnoreCase(VALUE_BOUND) && VALUE <= edgeMeanValue)
                         || ("upper".equalsIgnoreCase(VALUE_BOUND) && VALUE >= edgeMeanValue))
                 {
-                    // advance time
-                    TIME += w;
                     // Value meets bound criteria, return super (fastest) weighting
                     return w;
                 } else
@@ -72,14 +70,10 @@ public class ProbabilisticWeighting extends FastestWeighting
                     {
                         return Double.POSITIVE_INFINITY;
                     }
-                    // advance time
-                    TIME += w;
                     return w * edgePenaltyFactor * (1 + Math.abs(VALUE - edgeMeanValue)); // TODO userdefined? good value?
                 }
             }
         }
-        // advance time
-        TIME += w;
         // No data found, return super (fastest) weighting
         return w;
     }
