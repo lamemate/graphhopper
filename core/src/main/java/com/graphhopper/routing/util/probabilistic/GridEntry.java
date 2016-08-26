@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class GridEntry
 {
@@ -21,11 +22,15 @@ public class GridEntry
     // Map of list of available values
     private ConcurrentMap<Date, GridEntryData> values;
 
+    // Date and value cache
+    private ConcurrentMap<Date, GridEntryData> dateValueCache;
+
     public GridEntry( BBox boundingBox, Set<Integer> edges )
     {
         this.boundingBox = boundingBox;
         this.edges = edges;
-        this.values = new ConcurrentHashMap<Date, GridEntryData>();
+        this.values = new ConcurrentSkipListMap<Date, GridEntryData>();
+        this.dateValueCache = new ConcurrentHashMap<Date, GridEntryData>();
     }
 
     public boolean containsEdgeId( int id )
@@ -42,6 +47,11 @@ public class GridEntry
      */
     public GridEntryData getClosestSourcesForDateAndValueType( final Date date, GridEntryValueType gridEntryValueType )
     {
+        // Use cached value if date was used before
+        if (dateValueCache.containsKey(date)) {
+            return dateValueCache.get(date);
+        }
+
         long minDiff = Long.MAX_VALUE;
         Date closestDate = date;
 
@@ -54,6 +64,7 @@ public class GridEntry
                 closestDate = keyDate;
             }
         }
+        dateValueCache.put(date, values.get(closestDate));
         return values.get(closestDate);
     }
 

@@ -23,6 +23,7 @@ import com.google.inject.name.Names;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
+import com.graphhopper.routing.util.probabilistic.GridData;
 import com.graphhopper.util.CmdArgs;
 import com.graphhopper.util.TranslationMap;
 import org.slf4j.Logger;
@@ -100,7 +101,7 @@ public class DefaultModule extends AbstractModule
 
             bind(RouteSerializer.class).toInstance(new SimpleRouteSerializer(graphHopper.getGraphHopperStorage().getBounds()));
 
-            final WeatherDataUpdater updater = new WeatherDataUpdater(getGraphHopper(), getGraphHopper().getGridData());
+            final WeatherDataUpdater updater = new WeatherDataUpdater(getGraphHopper(), GridData.getInstance());
             bind(WeatherDataUpdater.class).toInstance(updater);
             updater.start();
             bind(ObjectMapper.class).toInstance(createMapper());
